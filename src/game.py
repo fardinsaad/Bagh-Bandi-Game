@@ -62,6 +62,7 @@ class Game:
                         self.goats.remove(goat_pos)
                         self.goats_on_board -= 1
                         self.remaining_goat_number -=1
+                        self.needs_update = True
                     self.selected_tiger = None
                     self.number_of_moves += 1
                     self.needs_update = True  # Update screen to show selected tiger
@@ -72,6 +73,7 @@ class Game:
                 # Check if a tiger is clicked
                 if (row, col) in self.tigers:
                     self.selected_tiger = (row, col)
+                    self.needs_update = True
 
     def run(self):
         running = True
