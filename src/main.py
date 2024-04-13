@@ -24,7 +24,7 @@ pygame.display.set_caption('Bagh Bandi Game')
 # Initial game state
 goats = []
 # Adjust the tigers' starting positions to be at the corners of the grid
-tigers = [(0, 0), (0, BOARD_SIZE - 1), (BOARD_SIZE - 1, 0), (BOARD_SIZE - 1, BOARD_SIZE - 1)]
+tigers = [(0, 0), (0, 4), (4, 0), (4, 4)]
 
 
 
@@ -79,6 +79,7 @@ def handle_click(pos):
             intersection = (row, col)
             if intersection not in goats and intersection not in [(0, 0), (0, BOARD_SIZE-1), (BOARD_SIZE-1, 0), (BOARD_SIZE-1, BOARD_SIZE-1)]:
                 goats.append(intersection)
+                print(goats)
 
 
 # Game loop
