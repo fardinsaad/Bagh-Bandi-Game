@@ -1,4 +1,4 @@
-# BaghBangi_AI
+# BaghBangi
 ## Requirements
 
 - Python 3.x
