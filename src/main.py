@@ -5,6 +5,7 @@ from constants import WINDOW_SIZE
 
 def main():
     pygame.init()
+    pygame.font.init()
     screen = pygame.display.set_mode(WINDOW_SIZE)
     pygame.display.set_caption('Bagh Bandi Game')
     game = Game(screen)

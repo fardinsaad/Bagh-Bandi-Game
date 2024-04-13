@@ -1,10 +1,21 @@
 import pygame
 from constants import *
-
+import pygame.font
 class Board:
     def __init__(self, screen):
         self.screen = screen
 
+    def draw_info(self, goats_on_board, remaining_goat_number, number_of_moves):
+        # Position the text at the bottom of the board
+        info_y_position = SCREEN_SIZE  - 500  # Adjust this as necessary
+        self.draw_text(f"Remaining Goats: {remaining_goat_number}", (MARGIN, info_y_position))
+        self.draw_text(f"Goats on Board: {goats_on_board}", (MARGIN + 200, info_y_position))
+        self.draw_text(f"Moves: {number_of_moves}", (MARGIN + 400, info_y_position))
+
+    def draw_text(self, text, position, font_size=20, color=(0, 0, 0)):
+        font = pygame.font.Font(None, font_size)
+        text_surface = font.render(text, True, color)
+        self.screen.blit(text_surface, position)
     def draw_lines(self):
         for i in range(BOARD_SIZE + 1):
             pygame.draw.line(self.screen, LINE_COLOR, (i * CELL_SIZE + MARGIN, MARGIN),
