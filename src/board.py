@@ -8,11 +8,11 @@ class Board:
     def draw_info(self, goats_on_board, remaining_goat_number, number_of_moves):
         # Position the text at the bottom of the board
         info_y_position = SCREEN_SIZE  - 500  # Adjust this as necessary
-        self.draw_text(f"Remaining Goats: {remaining_goat_number}", (MARGIN, info_y_position))
+        self.draw_text(f"Remaining Goats: {remaining_goat_number}", (MARGIN-50, info_y_position))
         self.draw_text(f"Goats on Board: {goats_on_board}", (MARGIN + 200, info_y_position))
-        self.draw_text(f"Moves: {number_of_moves}", (MARGIN + 400, info_y_position))
+        self.draw_text(f"Moves: {number_of_moves}", (MARGIN + 450, info_y_position))
 
-    def draw_text(self, text, position, font_size=20, color=(0, 0, 0)):
+    def draw_text(self, text, position, font_size=30, color=(0, 0, 0)):
         font = pygame.font.Font(None, font_size)
         text_surface = font.render(text, True, color)
         self.screen.blit(text_surface, position)

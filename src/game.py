@@ -7,7 +7,7 @@ class Game:
     def __init__(self, screen):
         self.screen = screen
         self.goats = []
-        self.tigers = [(0, 0), (0, BOARD_SIZE-1), (BOARD_SIZE-1, 0), (BOARD_SIZE-1, BOARD_SIZE-1)]
+        self.tigers = [(0, 0), (0, BOARD_SIZE), (BOARD_SIZE, 0), (BOARD_SIZE, BOARD_SIZE)]
         self.board = Board(screen)
         self.selected_tiger = None  # This will store the position of the selected tiger
         self.remaining_goat_number = 16
