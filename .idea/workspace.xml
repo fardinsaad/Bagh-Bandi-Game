@@ -5,6 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3c2aad61-5dcb-4873-8b07-53f41823ad24" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/astart.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bfs.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/dfs.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/monte_carlo.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/game.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/game.py" afterDir="false" />
     </list>
@@ -48,6 +52,11 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -68,6 +77,7 @@
       <workItem from="1712982916549" duration="531000" />
       <workItem from="1712983676024" duration="2210000" />
       <workItem from="1713668405535" duration="10000" />
+      <workItem from="1713668587503" duration="1702000" />
     </task>
     <servers />
   </component>

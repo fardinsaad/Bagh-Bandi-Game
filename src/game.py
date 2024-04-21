@@ -2,6 +2,10 @@ import pygame
 from board import Board
 from constants import *
 import random
+from monte_carlo import MonteCarlo
+from astart import ASTAR
+from bfs import BFS
+from dfs import DFS
 
 class Game:
     def __init__(self, screen):
@@ -16,14 +20,23 @@ class Game:
         self.needs_update = True  # Flag to track when the screen needs to be updated
 
     def place_goat(self):
+        algorithm = "monte_carlo"
         empty_positions = [(row, col) for row in range(BOARD_SIZE)
                                        for col in range(BOARD_SIZE)
                                        if (row, col) not in self.goats and (row, col) not in self.tigers]
-        if empty_positions:
-            new_goat_position = random.choice(empty_positions)
-            self.goats.append(new_goat_position)
-            self.goats_on_board += 1
-            self.needs_update = True  # Set the flag to update the screen
+        new_goat_position = None
+        if algorithm == "monte_carlo":
+            new_goat_position = MonteCarlo.determine_goat_move(self.board, self.tigers, self.tigers, empty_positions)
+        if algorithm == "astar":
+            new_goat_position = ASTAR.determine_goat_move(self.board, self.tigers, self.tigers, empty_positions)
+        if algorithm == "bfs":
+            new_goat_position = BFS.determine_goat_move(self.board, self.tigers, self.tigers, empty_positions)
+        if algorithm == "dfs":
+            new_goat_position = DFS.determine_goat_move(self.board, self.tigers, self.tigers, empty_positions)
+
+        self.goats.append(new_goat_position)
+        self.goats_on_board += 1
+        self.needs_update = True  # Set the flag to update the screen
 
     def is_goat_in_path(self, old_pos, new_pos):
         path = self.calculate_path(old_pos, new_pos)
