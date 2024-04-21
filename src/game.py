@@ -78,7 +78,7 @@ class Game:
     def run(self):
         running = True
         clock = pygame.time.Clock()  # Create a clock object to manage refresh rate
-
+        self.place_goat()
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
