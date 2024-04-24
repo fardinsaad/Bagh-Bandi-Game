@@ -24,3 +24,5 @@ After completing the installation and configuration steps, you can run your Pyth
 
 ```bash
 python your_script.py
+
+## Contributors: Paul, Fardin, Vinay, Saha
