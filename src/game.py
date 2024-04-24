@@ -25,14 +25,18 @@ class Game:
                                        for col in range(BOARD_SIZE)
                                        if (row, col) not in self.goats and (row, col) not in self.tigers]
         new_goat_position = None
+        print(empty_positions)
         if algorithm == "monte_carlo":
-            new_goat_position = MonteCarlo.determine_goat_move(self.board, self.tigers, self.tigers, empty_positions)
+            new_goat_position = MonteCarlo.determine_goat_move(MonteCarlo(board=self.board), self.tigers, self.goats, empty_positions)
+            print("ok")
+            print(new_goat_position)
+            new_goat_position = new_goat_position[1]
         if algorithm == "astar":
-            new_goat_position = ASTAR.determine_goat_move(self.board, self.tigers, self.tigers, empty_positions)
+            new_goat_position = ASTAR.determine_goat_move( self.tigers, self.goats, empty_positions)
         if algorithm == "bfs":
-            new_goat_position = BFS.determine_goat_move(self.board, self.tigers, self.tigers, empty_positions)
+            new_goat_position = BFS.determine_goat_move( self.tigers, self.goats, empty_positions)
         if algorithm == "dfs":
-            new_goat_position = DFS.determine_goat_move(self.board, self.tigers, self.tigers, empty_positions)
+            new_goat_position = DFS.determine_goat_move(self.tigers, self.goats, empty_positions)
 
         self.goats.append(new_goat_position)
         self.goats_on_board += 1
