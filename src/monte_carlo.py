@@ -32,16 +32,16 @@ class Node:
 
 
 class MonteCarlo:
-    def __init__(self, board, iterations=1000, time_limit=None):
+    def __init__(self, board, iterations=100, time_limit=None):
         self.board = board
         self.board_size = 4
         self.iterations = iterations
         self.time_limit = time_limit
 
-    def determine_goat_move(self, tigers, goats, empty_positions):
+    def determine_goat_move(self, tigers, goats, empty_positions, remaining_goat_number):
         import time
         start_time = time.time()
-        root = Node(state=State(tigers, goats, empty_positions))
+        root = Node(state=State(tigers, goats, empty_positions, remaining_goat_number))
 
         for _ in range(self.iterations):
             node = root
@@ -52,7 +52,8 @@ class MonteCarlo:
                 node = node.select_child()
                 state.do_move(node.move)
 
-            # Expansion
+            # Expansion        print(move)
+
             if node.untried_moves:
                 m = random.choice(node.untried_moves)
                 state.do_move(m)
@@ -74,33 +75,32 @@ class MonteCarlo:
         if not root.children:
             # Return a special value or handle it based on your game logic
             return None
-        print("fuck")
-        print(root.children)
         return max(root.children, key=lambda c: c.visits).move
 
 
 class State:
-    def __init__(self, tigers, goats, empty_positions):
+    def __init__(self, tigers, goats, empty_positions, remaining_goat_number):
         self.tigers = tigers
         self.goats = goats
         self.empty_positions = empty_positions
+        self.remaining_goat_number = remaining_goat_number
 
     def get_legal_moves(self):
         """ List all possible legal moves for the goats """
         legal_moves = []
-        if len(self.goats) < 16:
+        if self.remaining_goat_number > 0:
             # If fewer than 16 goats, any empty position can be a new goat placement
             for empty in self.empty_positions:
                 legal_moves.append((None, empty))  # None signifies no goat is moving, it's a placement
-        else:
+
             # Otherwise, goats can move to adjacent positions
-            directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
-            for goat in self.goats:
-                for dx, dy in directions:
-                    nx, ny = goat[0] + dx, goat[1] + dy
-                    if 0 <= nx < BOARD_SIZE and 0 <= ny < BOARD_SIZE:
-                        if (nx, ny) not in self.tigers and (nx, ny) not in self.goats:
-                            legal_moves.append((goat, (nx, ny)))
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
+        for goat in self.goats:
+            for dx, dy in directions:
+                nx, ny = goat[0] + dx, goat[1] + dy
+                if 0 <= nx <= BOARD_SIZE and 0 <= ny <= BOARD_SIZE:
+                    if (nx, ny) not in self.tigers and (nx, ny) not in self.goats:
+                        legal_moves.append((goat, (nx, ny)))
 
         return legal_moves
 
@@ -111,6 +111,7 @@ class State:
             # Move existing goat
             self.goats.remove(goat_position)
             self.goats.append(new_position)
+            self.empty_positions.append(goat_position)
         else:
             # Place new goat
             self.goats.append(new_position)
@@ -140,5 +141,5 @@ class State:
 
     def clone(self):
         """ Return a deep copy of the current game state """
-        return State(self.tigers.copy(), self.goats.copy(), self.empty_positions.copy())
+        return State(self.tigers.copy(), self.goats.copy(), self.empty_positions.copy(), self.remaining_goat_number)
 

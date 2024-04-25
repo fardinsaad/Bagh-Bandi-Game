@@ -36,6 +36,7 @@ class Board:
                          (SCREEN_SIZE + MARGIN, 2 * CELL_SIZE + MARGIN), 1)
 
     def draw_pieces(self, goats, tigers):
+        print(goats)
         for goat in goats:
             center = ((goat[1] * CELL_SIZE) + MARGIN, (goat[0] * CELL_SIZE) + MARGIN)
             pygame.draw.circle(self.screen, GOAT_COLOR, center, CELL_SIZE // 8)

@@ -21,16 +21,15 @@ class Game:
 
     def place_goat(self):
         algorithm = "monte_carlo"
-        empty_positions = [(row, col) for row in range(BOARD_SIZE)
-                                       for col in range(BOARD_SIZE)
+        empty_positions = [(row, col) for row in range(BOARD_SIZE+1)
+                                       for col in range(BOARD_SIZE+1)
                                        if (row, col) not in self.goats and (row, col) not in self.tigers]
         new_goat_position = None
         print(empty_positions)
         if algorithm == "monte_carlo":
-            new_goat_position = MonteCarlo.determine_goat_move(MonteCarlo(board=self.board), self.tigers, self.goats, empty_positions)
+            new_goat_position = MonteCarlo.determine_goat_move(MonteCarlo(board=self.board), self.tigers, self.goats, empty_positions, self.remaining_goat_number)
             print("ok")
             print(new_goat_position)
-            new_goat_position = new_goat_position[1]
         if algorithm == "astar":
             new_goat_position = ASTAR.determine_goat_move( self.tigers, self.goats, empty_positions)
         if algorithm == "bfs":
@@ -38,8 +37,12 @@ class Game:
         if algorithm == "dfs":
             new_goat_position = DFS.determine_goat_move(self.tigers, self.goats, empty_positions)
 
-        self.goats.append(new_goat_position)
-        self.goats_on_board += 1
+        if new_goat_position[0] is None:
+            self.goats.append(new_goat_position[1])
+            self.goats_on_board += 1
+        else:
+            if new_goat_position[0] in self.goats:
+                self.goats[self.goats.index(new_goat_position[0])] = new_goat_position[1]
         self.needs_update = True  # Set the flag to update the screen
 
     def is_goat_in_path(self, old_pos, new_pos):
