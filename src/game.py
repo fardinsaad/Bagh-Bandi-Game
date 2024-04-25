@@ -25,10 +25,8 @@ class Game:
                                        for col in range(BOARD_SIZE+1)
                                        if (row, col) not in self.goats and (row, col) not in self.tigers]
         new_goat_position = None
-        print(empty_positions)
         if algorithm == "monte_carlo":
             new_goat_position = MonteCarlo.determine_goat_move(MonteCarlo(board=self.board), self.tigers, self.goats, empty_positions, self.remaining_goat_number)
-            print("ok")
             print(new_goat_position)
         if algorithm == "astar":
             new_goat_position = ASTAR.determine_goat_move( self.tigers, self.goats, empty_positions)
@@ -76,6 +74,7 @@ class Game:
                 if new_position not in self.goats and new_position not in self.tigers:
                     self.tigers.remove(self.selected_tiger)
                     self.tigers.append(new_position)
+                    self.needs_update = True
                     goats_in_path, goat_pos = self.is_goat_in_path(self.selected_tiger, new_position)
                     print(goat_pos)
                     if goats_in_path:  # If there are goats in the path, remove the first one
@@ -85,10 +84,13 @@ class Game:
                         self.needs_update = True
                     self.selected_tiger = None
                     self.number_of_moves += 1
-                    self.needs_update = True  # Update screen to show selected tiger
+                     # Update screen to show selected tiger
+                    self.needs_update = True
+
 
                     # After moving tiger, place a goat randomly
                     self.place_goat()
+                    self.needs_update = True
             else:
                 # Check if a tiger is clicked
                 if (row, col) in self.tigers:

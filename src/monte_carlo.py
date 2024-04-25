@@ -32,7 +32,7 @@ class Node:
 
 
 class MonteCarlo:
-    def __init__(self, board, iterations=100, time_limit=None):
+    def __init__(self, board, iterations=1000, time_limit=None):
         self.board = board
         self.board_size = 4
         self.iterations = iterations
@@ -87,21 +87,27 @@ class State:
 
     def get_legal_moves(self):
         """ List all possible legal moves for the goats """
+        normal_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        diagonal_directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+        restricted_positions = {(1, 1), (1, 3), (3, 1), (3, 3), (1,4), (1,0), (3,0), (3,4)}
+
         legal_moves = []
         if self.remaining_goat_number > 0:
             # If fewer than 16 goats, any empty position can be a new goat placement
             for empty in self.empty_positions:
                 legal_moves.append((None, empty))  # None signifies no goat is moving, it's a placement
 
-            # Otherwise, goats can move to adjacent positions
-        directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
-        for goat in self.goats:
-            for dx, dy in directions:
-                nx, ny = goat[0] + dx, goat[1] + dy
-                if 0 <= nx <= BOARD_SIZE and 0 <= ny <= BOARD_SIZE:
-                    if (nx, ny) not in self.tigers and (nx, ny) not in self.goats:
-                        legal_moves.append((goat, (nx, ny)))
+            for goat in self.goats:
+                if goat in restricted_positions:
+                    directions = normal_directions  # Only horizontal and vertical moves
+                else:
+                    directions = normal_directions + diagonal_directions  # All possible moves
 
+                for dx, dy in directions:
+                    nx, ny = goat[0] + dx, goat[1] + dy
+                    if 0 <= nx < BOARD_SIZE and 0 <= ny < BOARD_SIZE:
+                        if (nx, ny) not in self.tigers and (nx, ny) not in self.goats:
+                            legal_moves.append((goat, (nx, ny)))
         return legal_moves
 
     def do_move(self, move):
