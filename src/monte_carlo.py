@@ -89,7 +89,7 @@ class State:
         """ List all possible legal moves for the goats """
         normal_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         diagonal_directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
-        restricted_positions = {(1, 1), (1, 3), (3, 1), (3, 3), (1,4), (1,0), (3,0), (3,4)}
+        restricted_positions = {(1, 1), (1, 3), (3, 1), (3, 3), (1,4), (1,0), (3,0), (3,4), (0,1), (0,3), (2,1), (2,3), (4,1), (4,3)}
 
         legal_moves = []
         if self.remaining_goat_number > 0:
@@ -124,12 +124,22 @@ class State:
         self.empty_positions.remove(new_position)
     def get_result(self):
         """ Determine the result of a game from the goats' perspective """
+        normal_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        diagonal_directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+        restricted_positions = {(1, 1), (1, 3), (3, 1), (3, 3), (1, 4), (1, 0), (3, 0), (3, 4), (0, 1), (0, 3), (2, 1),
+                                (2, 3), (4, 1), (4, 3)}
+
         if not self.goats:
             return -1  # All goats are captured, tigers win
 
         # Check if tigers have any valid moves
-        directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]  # All possible directions
+
         for tiger in self.tigers:
+            if tiger in restricted_positions:
+                directions = normal_directions  # Only horizontal and vertical moves
+            else:
+                directions = normal_directions + diagonal_directions  # All possible moves
+
             for dx, dy in directions:
                 # Check simple move
                 adj_x, adj_y = tiger[0] + dx, tiger[1] + dy
@@ -141,7 +151,7 @@ class State:
                 jump_x, jump_y = tiger[0] + 2 * dx, tiger[1] + 2 * dy
                 if 0 <= jump_x <= BOARD_SIZE and 0 <= jump_y <= BOARD_SIZE:
                     if (adj_x, adj_y) in self.goats and (jump_x, jump_y) not in self.tigers and (jump_x, jump_y) not in self.goats:
-                        return 0  # Tigers can still jump/capture, game continues
+                        return -0.5  # Tigers can still jump/capture, game continues
 
         return 1  # No valid moves for tigers, goats win
 
