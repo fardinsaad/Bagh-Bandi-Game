@@ -1,5 +1,8 @@
 import random
-from constants import *
+import math
+from constants import BOARD_SIZE  # Assuming BOARD_SIZE is defined in constants
+
+
 class Node:
     def __init__(self, move=None, parent=None, state=None):
         self.move = move
@@ -11,30 +14,28 @@ class Node:
         self.untried_moves = state.get_legal_moves()
 
     def select_child(self):
-        """ Select a child node with the highest UCB1 value """
-        import math
-        return max(self.children, key=lambda c: c.wins / c.visits + math.sqrt(2 * math.log(self.visits) / c.visits))
+        """Select a child node with the highest UCB1 value."""
+        return max(self.children, key=lambda c: (c.wins / c.visits) + math.sqrt(2 * math.log(self.visits) / c.visits))
 
     def add_child(self, move, state):
-        """ Add a new child node for the given move """
+        """Add a new child node for the given move."""
         child = Node(move=move, parent=self, state=state)
         self.untried_moves.remove(move)
         self.children.append(child)
         return child
 
     def update(self, result):
-        """ Update this node - increment the visit count by 1 and increase wins by the result of the play-out """
+        """Update this node - increment the visit count by 1 and increase wins by the result of the play-out."""
         self.visits += 1
-        self.wins += result
+        self.wins += result  # Adjust how result affects wins if necessary
 
     def __repr__(self):
-        return f"[M:{self.move} W/V:{self.wins}/{self.visits} U:{self.untried_moves}]"
+        return f"[M:{self.move} W/V:{self.wins}/{self.visits} U:{len(self.untried_moves)}]"
 
 
 class MonteCarlo:
     def __init__(self, board, iterations=1000, time_limit=None):
         self.board = board
-        self.board_size = 4
         self.iterations = iterations
         self.time_limit = time_limit
 
@@ -52,8 +53,7 @@ class MonteCarlo:
                 node = node.select_child()
                 state.do_move(node.move)
 
-            # Expansion        print(move)
-
+            # Expansion
             if node.untried_moves:
                 m = random.choice(node.untried_moves)
                 state.do_move(m)
@@ -65,18 +65,16 @@ class MonteCarlo:
 
             # Backpropagation
             while node:
-                node.update(state.get_result())
+                result = state.get_result()
+                node.update(result)
                 node = node.parent
 
             if self.time_limit and (time.time() - start_time > self.time_limit):
                 break
 
-        # Handle the case where there are no children (e.g., no valid moves were added)
         if not root.children:
-            # Return a special value or handle it based on your game logic
-            return None
+            return None  # Handle no valid moves
         return max(root.children, key=lambda c: c.visits).move
-
 
 class State:
     def __init__(self, tigers, goats, empty_positions, remaining_goat_number):
@@ -86,28 +84,29 @@ class State:
         self.remaining_goat_number = remaining_goat_number
 
     def get_legal_moves(self):
-        """ List all possible legal moves for the goats """
+        """ List all possible legal moves for the goats, considering safety and restricted positions. """
         normal_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         diagonal_directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
-        restricted_positions = {(1, 1), (1, 3), (3, 1), (3, 3), (1,4), (1,0), (3,0), (3,4), (0,1), (0,3), (2,1), (2,3), (4,1), (4,3)}
+        restricted_positions = {(1, 0), (3, 0), (0, 1), (2, 1), (4, 1), (1, 2), (3, 2), (0, 3), (2, 3), (4, 3), (1, 4), (3, 4)}
 
         legal_moves = []
         if self.remaining_goat_number > 0:
-            # If fewer than 16 goats, any empty position can be a new goat placement
-            for empty in self.empty_positions:
-                legal_moves.append((None, empty))  # None signifies no goat is moving, it's a placement
+            # Prioritize safe placements before risky ones
+            safe_empty_positions = [empty for empty in self.empty_positions if not self.is_adjacent_to_tiger(empty)]
+            risky_empty_positions = [empty for empty in self.empty_positions if self.is_adjacent_to_tiger(empty)]
+            for empty in safe_empty_positions + risky_empty_positions:
+                legal_moves.append((None, empty))  # None signifies placement of a new goat
 
-            for goat in self.goats:
-                if goat in restricted_positions:
-                    directions = normal_directions  # Only horizontal and vertical moves
-                else:
-                    directions = normal_directions + diagonal_directions  # All possible moves
-
-                for dx, dy in directions:
-                    nx, ny = goat[0] + dx, goat[1] + dy
-                    if 0 <= nx < BOARD_SIZE and 0 <= ny < BOARD_SIZE:
-                        if (nx, ny) not in self.tigers and (nx, ny) not in self.goats:
-                            legal_moves.append((goat, (nx, ny)))
+        # Movement moves
+        for goat in self.goats:
+            allowed_directions = normal_directions if goat in restricted_positions else normal_directions + diagonal_directions
+            for dx, dy in allowed_directions:
+                nx, ny = goat[0] + dx, goat[1] + dy
+                if 0 <= nx < BOARD_SIZE and 0 <= ny < BOARD_SIZE and (nx, ny) not in self.tigers and (nx, ny) not in self.goats:
+                    if not self.is_adjacent_to_tiger((nx, ny)):
+                        legal_moves.insert(0, (goat, (nx, ny)))  # Prioritize safer moves
+                    else:
+                        legal_moves.append((goat, (nx, ny)))  # Add risky moves if necessary
         return legal_moves
 
     def do_move(self, move):
@@ -122,40 +121,43 @@ class State:
             # Place new goat
             self.goats.append(new_position)
         self.empty_positions.remove(new_position)
+
+    def is_adjacent_to_tiger(self, position):
+        """ Check if a position is adjacent to any tiger """
+        px, py = position
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
+        return any((px + dx, py + dy) in self.tigers for dx, dy in directions)
+
     def get_result(self):
-        """ Determine the result of a game from the goats' perspective """
-        normal_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-        diagonal_directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
-        restricted_positions = {(1, 1), (1, 3), (3, 1), (3, 3), (1, 4), (1, 0), (3, 0), (3, 4), (0, 1), (0, 3), (2, 1),
-                                (2, 3), (4, 1), (4, 3)}
+        """ Evaluate the game state from the goats' perspective, prioritizing safety. """
+        # if not self.goats:
+        #     return -1  # All goats are captured, tigers win
 
-        if not self.goats:
-            return -1  # All goats are captured, tigers win
+        score = 0
+        for goat in self.goats:
+            if self.is_adjacent_to_tiger(goat):
+                score -= 10  # Penalize positions where goats are next to tigers
 
-        # Check if tigers have any valid moves
+        # Tigers' movement evaluation
+        # for tiger in self.tigers:
+        #     for direction in [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
+        #         if self.can_move(tiger, direction):
+        #             score += 3  # Game continues, evaluate based on tiger mobility
 
-        for tiger in self.tigers:
-            if tiger in restricted_positions:
-                directions = normal_directions  # Only horizontal and vertical moves
-            else:
-                directions = normal_directions + diagonal_directions  # All possible moves
+        return score
 
-            for dx, dy in directions:
-                # Check simple move
-                adj_x, adj_y = tiger[0] + dx, tiger[1] + dy
-                if 0 <= adj_x <= BOARD_SIZE and 0 <= adj_y <= BOARD_SIZE:
-                    if (adj_x, adj_y) not in self.tigers and (adj_x, adj_y) not in self.goats:
-                        return 0  # Tigers can still move, game continues
-
-                # Check jump move
-                jump_x, jump_y = tiger[0] + 2 * dx, tiger[1] + 2 * dy
-                if 0 <= jump_x <= BOARD_SIZE and 0 <= jump_y <= BOARD_SIZE:
-                    if (adj_x, adj_y) in self.goats and (jump_x, jump_y) not in self.tigers and (jump_x, jump_y) not in self.goats:
-                        return -0.5  # Tigers can still jump/capture, game continues
-
-        return 1  # No valid moves for tigers, goats win
+    def can_move(self, position, direction):
+        """ Check if a move is valid given a position and direction, considering board boundaries and other pieces """
+        px, py = position
+        dx, dy = direction
+        nx, ny = px + dx, py + dy
+        if 0 <= nx < BOARD_SIZE and 0 <= ny < BOARD_SIZE:
+            if (nx, ny) not in self.tigers and (nx, ny) not in self.goats:
+                return True
+        return False
 
     def clone(self):
-        """ Return a deep copy of the current game state """
+        """ Create a deep copy of the current game state """
         return State(self.tigers.copy(), self.goats.copy(), self.empty_positions.copy(), self.remaining_goat_number)
+
 

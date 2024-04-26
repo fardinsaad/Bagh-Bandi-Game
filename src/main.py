@@ -3,6 +3,7 @@ import sys
 from game import Game
 from constants import WINDOW_SIZE
 
+
 def main():
     pygame.init()
     pygame.font.init()
@@ -11,6 +12,7 @@ def main():
     game = Game(screen)
     game.run()
     sys.exit()
+
 
 if __name__ == '__main__':
     main()
