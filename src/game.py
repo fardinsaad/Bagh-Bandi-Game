@@ -20,7 +20,7 @@ class Game:
         self.needs_update = True  # Flag to track when the screen needs to be updated
 
     def place_goat(self):
-        algorithm = "monte_carlo"
+        algorithm = "astar"
         empty_positions = [(row, col) for row in range(BOARD_SIZE+1)
                                        for col in range(BOARD_SIZE+1)
                                        if (row, col) not in self.goats and (row, col) not in self.tigers]
@@ -29,7 +29,8 @@ class Game:
             new_goat_position = MonteCarlo.determine_goat_move(MonteCarlo(board=self.board), self.tigers, self.goats, empty_positions, self.remaining_goat_number)
             print(new_goat_position)
         if algorithm == "astar":
-            new_goat_position = ASTAR.determine_goat_move( self.tigers, self.goats, empty_positions, self.remaining_goat_number)
+            print("here")
+            new_goat_position = ASTAR.determine_goat_move(ASTAR(board=self.board), self.tigers, self.goats, empty_positions)
         if algorithm == "bfs":
             new_goat_position = BFS.determine_goat_move( self.tigers, self.goats, empty_positions)
         if algorithm == "dfs":
