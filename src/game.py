@@ -29,7 +29,7 @@ class Game:
             new_goat_position = MonteCarlo.determine_goat_move(MonteCarlo(board=self.board), self.tigers, self.goats, empty_positions, self.remaining_goat_number)
             print(new_goat_position)
         if algorithm == "astar":
-            new_goat_position = ASTAR.determine_goat_move( self.tigers, self.goats, empty_positions)
+            new_goat_position = ASTAR.determine_goat_move( self.tigers, self.goats, empty_positions, self.remaining_goat_number)
         if algorithm == "bfs":
             new_goat_position = BFS.determine_goat_move( self.tigers, self.goats, empty_positions)
         if algorithm == "dfs":
@@ -76,7 +76,6 @@ class Game:
                     self.tigers.append(new_position)
                     self.needs_update = True
                     goats_in_path, goat_pos = self.is_goat_in_path(self.selected_tiger, new_position)
-                    print(goat_pos)
                     if goats_in_path:  # If there are goats in the path, remove the first one
                         self.goats.remove(goat_pos)
                         self.goats_on_board -= 1
@@ -89,8 +88,11 @@ class Game:
 
 
                     # After moving tiger, place a goat randomly
+                    self.needs_update = True
                     self.place_goat()
                     self.needs_update = True
+
+
             else:
                 # Check if a tiger is clicked
                 if (row, col) in self.tigers:
