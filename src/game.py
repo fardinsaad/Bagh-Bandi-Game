@@ -7,6 +7,7 @@ from astart import ASTAR
 from bfs import BFS
 from dfs import DFS
 
+
 class Game:
     def __init__(self, screen):
         self.screen = screen
@@ -14,26 +15,36 @@ class Game:
         self.tigers = [(0, 0), (0, BOARD_SIZE), (BOARD_SIZE, 0), (BOARD_SIZE, BOARD_SIZE)]
         self.board = Board(screen)
         self.selected_tiger = None  # This will store the position of the selected tiger
-        self.remaining_goat_number = 16
+        self.remaining_goat_number = 20
         self.goats_on_board = 0
         self.number_of_moves = 0
         self.needs_update = True  # Flag to track when the screen needs to be updated
+        self.message = "On-going"
 
     def place_goat(self):
         algorithm = "monte_carlo"
-        empty_positions = [(row, col) for row in range(BOARD_SIZE+1)
-                                       for col in range(BOARD_SIZE+1)
-                                       if (row, col) not in self.goats and (row, col) not in self.tigers]
+        empty_positions = [(row, col) for row in range(BOARD_SIZE + 1)
+                           for col in range(BOARD_SIZE + 1)
+                           if (row, col) not in self.goats and (row, col) not in self.tigers]
         new_goat_position = None
         if algorithm == "monte_carlo":
-            new_goat_position = MonteCarlo.determine_goat_move(MonteCarlo(board=self.board), self.tigers, self.goats, empty_positions, self.remaining_goat_number)
+            new_goat_position = MonteCarlo.determine_goat_move(MonteCarlo(board=self.board), self.tigers, self.goats,
+                                                               empty_positions, self.remaining_goat_number)
             print(new_goat_position)
         if algorithm == "astar":
-            new_goat_position = ASTAR.determine_goat_move( self.tigers, self.goats, empty_positions)
+            new_goat_position = ASTAR.determine_goat_move(self.tigers, self.goats, empty_positions)
         if algorithm == "bfs":
-            new_goat_position = BFS.determine_goat_move( self.tigers, self.goats, empty_positions)
+            new_goat_position = BFS.determine_goat_move(self.tigers, self.goats, empty_positions)
         if algorithm == "dfs":
             new_goat_position = DFS.determine_goat_move(self.tigers, self.goats, empty_positions)
+
+        if new_goat_position is None:
+            print("No valid moves available.")
+            if algorithm == "monte_carlo":
+                self.message = "Stalemate. It's a DRAW!!"
+                self.needs_update = True
+
+            return  # Exit the function if no valid move is returned
 
         if new_goat_position[0] is None:
             self.goats.append(new_goat_position[1])
@@ -80,13 +91,12 @@ class Game:
                     if goats_in_path:  # If there are goats in the path, remove the first one
                         self.goats.remove(goat_pos)
                         self.goats_on_board -= 1
-                        self.remaining_goat_number -=1
+                        self.remaining_goat_number -= 1
                         self.needs_update = True
                     self.selected_tiger = None
                     self.number_of_moves += 1
-                     # Update screen to show selected tiger
+                    # Update screen to show selected tiger
                     self.needs_update = True
-
 
                     # After moving tiger, place a goat randomly
                     self.place_goat()
@@ -111,9 +121,8 @@ class Game:
             if self.needs_update:  # Only draw when needed
                 self.screen.fill(BACKGROUND_COLOR)  # Clear the screen
                 self.board.draw(self.goats, self.tigers)  # Draw the board and the pieces
-                self.board.draw_info(self.goats_on_board, self.remaining_goat_number, self.number_of_moves)
+                self.board.draw_info(self.goats_on_board, self.remaining_goat_number, self.number_of_moves,self.message)
                 pygame.display.flip()  # Update the display
                 self.needs_update = False  # Reset the update flag
 
         pygame.quit()
-

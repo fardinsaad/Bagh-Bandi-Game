@@ -15,7 +15,7 @@ class Node:
 
     def select_child(self):
         """Select a child node with the highest UCB1 value."""
-        exploration_constant = 2
+        exploration_constant = 1.5
         return max(self.children, key=lambda c: (c.wins / c.visits) + math.sqrt(
             exploration_constant * math.log(self.visits) / c.visits))
 
@@ -42,8 +42,6 @@ class MonteCarlo:
         self.time_limit = time_limit
 
     def determine_goat_move(self, tigers, goats, empty_positions, remaining_goat_number):
-        import time
-        start_time = time.time()
         root = Node(state=State(tigers, goats, empty_positions, remaining_goat_number))
 
         for _ in range(self.iterations):
@@ -178,8 +176,8 @@ class State:
             #    score += 1
 
             # Reward for goats that are protected by another goat.
-            # if self.has_protective_neighbor(goat):
-            #    score += 30  # Increase the reward to reflect the strategic importance of protection.
+            if self.has_protective_neighbor(goat):
+                score += 15  # Increase the reward to reflect the strategic importance of protection.
 
             # Reward for goats are escape from imminent threat of capture
             allowed_directions = normal_directions + diagonal_directions if goat not in self.restricted_positions else normal_directions
@@ -191,17 +189,17 @@ class State:
 
         return score
 
-    # def has_protective_neighbor(self, goat):
-    #     """Check if there is a protective neighbor goat next to the endangered goat that itself is not in immediate
-    #     danger of capture."""
-    #     x, y = goat
-    #
-    #     for dx in [-1, 0, 1]:
-    #         for dy in [-1, 0, 1]:
-    #             neighbor_pos = (x + dx, y + dy)
-    #             if neighbor_pos in self.goats:
-    #                 return True
-    #     return False
+    def has_protective_neighbor(self, goat):
+        """Check if there is a protective neighbor goat next to the endangered goat that itself is not in immediate
+        danger of capture."""
+        x, y = goat
+
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                neighbor_pos = (x + dx, y + dy)
+                if neighbor_pos in self.goats:
+                    return True
+        return False
 
     def is_capture_blocked_by_tiger(self, goat_position):
         """Check if a goat at this position is protected from capture by another tiger or goat blocking the capture
