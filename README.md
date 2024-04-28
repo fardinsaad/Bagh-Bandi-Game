@@ -14,9 +14,9 @@
     
 2. Change directory to src
 
-  ```bash
-  cd src
-  ```
+    ```bash
+    cd src
+    ```
 
 3. Install dependencies using pip:
 
@@ -29,6 +29,7 @@
 After completing the installation and configuration steps, you can run your Python script. Ensure that all dependencies are installed and the environment variables are properly set.
 
 ```bash
-python your_script.py
+[python your_script.py]
+python3 main.py
 
 ## Contributors: Paul, Fardin, Vinay, Saha
