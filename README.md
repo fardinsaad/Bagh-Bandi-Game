@@ -11,8 +11,14 @@
     ```bash
     git clone <repository_url>
     ```
+    
+2. Change directory to src
 
-2. Install dependencies using pip:
+  ```bash
+  cd src
+  ```
+
+3. Install dependencies using pip:
 
     ```bash
     pip install -r requirements.txt
