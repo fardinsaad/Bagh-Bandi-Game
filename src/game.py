@@ -7,34 +7,49 @@ from astart import ASTAR
 from bfs import BFS
 from dfs import DFS
 
+
 class Game:
-    def __init__(self, screen):
+    def __init__(self, screen, algorithm):
         self.screen = screen
+        self.algorithm = algorithm
         self.goats = []
         self.tigers = [(0, 0), (0, BOARD_SIZE), (BOARD_SIZE, 0), (BOARD_SIZE, BOARD_SIZE)]
         self.board = Board(screen)
         self.selected_tiger = None  # This will store the position of the selected tiger
-        self.remaining_goat_number = 16
+        self.remaining_goat_number = 20
         self.goats_on_board = 0
         self.number_of_moves = 0
         self.needs_update = True  # Flag to track when the screen needs to be updated
+        self.message = "On-going"
 
     def place_goat(self):
-        algorithm = "astar"
-        empty_positions = [(row, col) for row in range(BOARD_SIZE+1)
-                                       for col in range(BOARD_SIZE+1)
-                                       if (row, col) not in self.goats and (row, col) not in self.tigers]
+
+        algorithm = self.algorithm
+        empty_positions = [(row, col) for row in range(BOARD_SIZE + 1)
+                           for col in range(BOARD_SIZE + 1)
+                           if (row, col) not in self.goats and (row, col) not in self.tigers]
         new_goat_position = None
         if algorithm == "monte_carlo":
-            new_goat_position = MonteCarlo.determine_goat_move(MonteCarlo(board=self.board), self.tigers, self.goats, empty_positions, self.remaining_goat_number)
-            print(new_goat_position)
-        if algorithm == "astar":
-            print("here")
-            new_goat_position = ASTAR.determine_goat_move(ASTAR(board=self.board), self.tigers, self.goats, empty_positions)
+            new_goat_position, status = MonteCarlo.determine_goat_move(MonteCarlo(board=self.board), self.tigers,
+                                                                       self.goats,
+                                                                       empty_positions, self.remaining_goat_number)
+            print(new_goat_position, status)
+            self.message = status
+        print("here")
+        print("state of goat before initialization", self.goats)
+        new_goat_position = ASTAR.determine_goat_move(ASTAR(board=self.board), self.tigers, self.goats, empty_positions,
+                                                      self.remaining_goat_number)
+        print("state of goat after initialization", self.goats)
         if algorithm == "bfs":
-            new_goat_position = BFS.determine_goat_move( self.tigers, self.goats, empty_positions)
+            new_goat_position = BFS.determine_goat_move(BFS(board=self.board), self.tigers, self.goats, empty_positions,
+                                                        self.remaining_goat_number)
+
         if algorithm == "dfs":
             new_goat_position = DFS.determine_goat_move(self.tigers, self.goats, empty_positions)
+
+        if new_goat_position is None:
+            print("No valid moves available.")
+            return  # Exit the function if no valid move is returned
 
         if new_goat_position[0] is None:
             self.goats.append(new_goat_position[1])
@@ -77,26 +92,24 @@ class Game:
                     self.tigers.append(new_position)
                     self.needs_update = True
                     goats_in_path, goat_pos = self.is_goat_in_path(self.selected_tiger, new_position)
+                    print(goat_pos)
                     if goats_in_path:  # If there are goats in the path, remove the first one
                         self.goats.remove(goat_pos)
                         self.goats_on_board -= 1
-                        self.remaining_goat_number -=1
+                        self.remaining_goat_number -= 1
                         self.needs_update = True
                     self.selected_tiger = None
                     self.number_of_moves += 1
-                     # Update screen to show selected tiger
+                    # Update screen to show selected tiger
                     self.needs_update = True
-
-
+                    print("```Tiger Moved``````````")
                     # After moving tiger, place a goat randomly
-                    self.needs_update = True
                     self.place_goat()
                     self.needs_update = True
-
-
             else:
                 # Check if a tiger is clicked
                 if (row, col) in self.tigers:
+                    print("```Tiger Clicked`````````````")
                     self.selected_tiger = (row, col)
                     self.needs_update = True
 
@@ -111,12 +124,19 @@ class Game:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.handle_click(pygame.mouse.get_pos())
 
+            # Check game status
+            if self.message != "On-going":
+                self.message = f"Game over: {self.message}"  # Update message based on game status
+                self.needs_update = True
+                print("Inside status loop")
+                running = False  # Stop the game loop if the game has ended
+
             if self.needs_update:  # Only draw when needed
                 self.screen.fill(BACKGROUND_COLOR)  # Clear the screen
                 self.board.draw(self.goats, self.tigers)  # Draw the board and the pieces
-                self.board.draw_info(self.goats_on_board, self.remaining_goat_number, self.number_of_moves)
+                self.board.draw_info(self.goats_on_board, self.remaining_goat_number, self.number_of_moves,
+                                     self.message)
                 pygame.display.flip()  # Update the display
                 self.needs_update = False  # Reset the update flag
 
         pygame.quit()
-
