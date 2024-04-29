@@ -33,10 +33,10 @@ This repository is made for CSC-510 Software Engineering Course at NC State Univ
 <table>
   <tr>
     <td align="center"><a href="https://github.ncsu.edu/fsaad"><img src="https://avatars.githubusercontent.com/u/26558907?v=4" width="75px;" alt=""/><br /><sub><b>Fardin Saad</b></sub></a></td>
-    <td align="center"><a href="https://github.com/jwgerlach00"><img src="https://avatars.githubusercontent.com/u/57069011?v=4" width="75px;" alt=""/><br /><sub><b>Jacob Gerlach
+    <td align="center"><a href="https://github.com/jwgerlach00"><img src="https://avatars.githubusercontent.com/u/26558907?v=4" width="75px;" alt=""/><br /><sub><b>Uchswas Paul
 </b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/Uchswas"><img src="https://avatars.githubusercontent.com/u/19565049?v=4" width="75px;" alt=""/><br /><sub><b>Uchswas Paul</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/Sana-Ma"><img src="https://avatars.githubusercontent.com/u/70275715?v=4" width="75px;" alt=""/><br /><sub><b>Sana Mahmoud</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/Uchswas"><img src="https://avatars.githubusercontent.com/u/19565049?v=4" width="75px;" alt=""/><br /><sub><b>Vinay</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/Sana-Ma"><img src="https://avatars.githubusercontent.com/u/70275715?v=4" width="75px;" alt=""/><br /><sub><b>Saha</b></sub></a><br /></td>
 
   </tr>
 </table>
