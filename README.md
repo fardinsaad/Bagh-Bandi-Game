@@ -23,6 +23,6 @@
 After completing the installation and configuration steps, you can run your Python script. Ensure that all dependencies are installed and the environment variables are properly set.
 
 ```bash
-python your_script.py
+python main.py <algo_name> 
 
 ## Contributors: Paul, Fardin, Vinay, Saha
