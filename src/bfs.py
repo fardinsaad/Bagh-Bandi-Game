@@ -154,7 +154,7 @@ class State:
                                 (3, 4)}
 
         legal_moves = []
-        if self.remaining_goat_number > 0:
+        if self.remaining_goat_number - len(self.goats) > 0:
             # Prioritize safe placements before risky ones
             safe_empty_positions = [empty for empty in self.empty_positions if not self.is_adjacent_to_tiger(empty)]
             risky_empty_positions = [empty for empty in self.empty_positions if self.is_adjacent_to_tiger(empty)]

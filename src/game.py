@@ -16,7 +16,7 @@ class Game:
         self.tigers = [(0, 0), (0, BOARD_SIZE), (BOARD_SIZE, 0), (BOARD_SIZE, BOARD_SIZE)]
         self.board = Board(screen)
         self.selected_tiger = None  # This will store the position of the selected tiger
-        self.remaining_goat_number = 20
+        self.remaining_goat_number = 25
         self.goats_on_board = 0
         self.number_of_moves = 0
         self.needs_update = True  # Flag to track when the screen needs to be updated
@@ -39,7 +39,8 @@ class Game:
         if algorithm == "astar":
             new_goat_position = ASTAR.determine_goat_move(self.tigers, self.goats, empty_positions)
         if algorithm == "bfs":
-            new_goat_position = BFS.determine_goat_move(self.tigers, self.goats, empty_positions)
+            new_goat_position = BFS.determine_goat_move(BFS(board=self.board), self.tigers, self.goats, empty_positions,
+                                                        self.remaining_goat_number)
         if algorithm == "dfs":
             new_goat_position = DFS.determine_goat_move(DFS(board=self.board), self.tigers, self.goats, empty_positions,
                                                         self.remaining_goat_number)
@@ -177,10 +178,8 @@ class Game:
             # Check game status
             if self.message != "On-going":
                 self.message = f"Game over: {self.message}"  # Update message based on game status
-                self.needs_update = True
                 print("Inside status loop")
-                running = False  # Stop the game loop if the game has ended
-
+            #self.needs_update = True
             if self.needs_update:  # Only draw when needed
                 self.screen.fill(BACKGROUND_COLOR)  # Clear the screen
                 self.board.draw(self.goats, self.tigers)  # Draw the board and the pieces
