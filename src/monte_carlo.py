@@ -69,15 +69,15 @@ class MonteCarlo:
                 node.update(result)
                 node = node.parent
 
-        status = root.state.game_status()  # Check the game status
+        #status = root.state.game_status()  # Check the game status
 
         if not root.children:
-            return None, status   # Handle no valid moves
+            return None  # Handle no valid moves
 
         # if status != "On-going":  # If game is not ongoing, handle the end-game condition
         #     return status  # This could be 'win_for_tigers', 'win_for_goats', or 'stalemate'
 
-        return max(root.children, key=lambda c: c.visits).move, status
+        return max(root.children, key=lambda c: c.visits).move
 
 
 class State:
@@ -88,18 +88,6 @@ class State:
         self.remaining_goat_number = remaining_goat_number
         self.restricted_positions = {(1, 0), (3, 0), (0, 1), (2, 1), (4, 1), (1, 2), (3, 2), (0, 3), (2, 3), (4, 3),
                                      (1, 4), (3, 4)}
-
-    def game_status(self):
-        # Checks if all tigers are trapped
-        if all(not self.can_move(tiger) for tiger in self.tigers):
-            return "Win for Goats"
-        # Checks if all goats are captured
-        if len(self.goats) == 0 and self.remaining_goat_number == 0:
-            return "Win for Tigers"
-        # Checks for stalemate: no valid moves and all goats used
-        if self.remaining_goat_number == 0 and not self.get_legal_moves():
-            return "Stalemate"
-        return "On-going"
 
     def is_adjacent_to_tiger(self, position):
         """ Check if the given position is adjacent to any tiger, considering restricted diagonal movements. """
@@ -313,7 +301,7 @@ class State:
             return protective_moves + escape_moves
 
         # Regular safe placements and moves
-        if self.remaining_goat_number > 0:
+        if self.remaining_goat_number - len(self.goats) > 0:
             for empty in self.empty_positions:
                 if not self.is_adjacent_to_tiger(empty):
                     legal_moves.append((None, empty))
