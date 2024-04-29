@@ -25,5 +25,5 @@ After completing the installation and configuration steps, you can run your Pyth
 ```bash
 cd src
 python main.py <algo_name> 
-
+```
 ## Contributors: Paul, Fardin, Vinay, Saha
