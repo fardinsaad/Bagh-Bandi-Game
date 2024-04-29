@@ -28,7 +28,7 @@ python main.py <algo_name>
 ```
 ## Team Members
 
-This repository is made for CSC-510 Software Engineering Course at NC State University for Fall 2023.
+This repository is made for CSC-520 Artificial Intelligence Course at NC State University for Spring 2024.
 
 <table>
   <tr>
