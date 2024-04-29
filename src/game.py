@@ -28,9 +28,10 @@ class Game:
                            if (row, col) not in self.goats and (row, col) not in self.tigers]
         new_goat_position = None
         if algorithm == "monte_carlo":
-            new_goat_position = MonteCarlo.determine_goat_move(MonteCarlo(board=self.board), self.tigers, self.goats,
+            new_goat_position, status = MonteCarlo.determine_goat_move(MonteCarlo(board=self.board), self.tigers, self.goats,
                                                                empty_positions, self.remaining_goat_number)
-            print(new_goat_position)
+            print(new_goat_position, status)
+            self.message = status
         if algorithm == "astar":
             new_goat_position = ASTAR.determine_goat_move(self.tigers, self.goats, empty_positions)
         if algorithm == "bfs":
@@ -40,10 +41,6 @@ class Game:
 
         if new_goat_position is None:
             print("No valid moves available.")
-            if algorithm == "monte_carlo":
-                self.message = "Stalemate. It's a DRAW!!"
-                self.needs_update = True
-
             return  # Exit the function if no valid move is returned
 
         if new_goat_position[0] is None:
@@ -97,13 +94,14 @@ class Game:
                     self.number_of_moves += 1
                     # Update screen to show selected tiger
                     self.needs_update = True
-
+                    print("```Tiger Moved``````````")
                     # After moving tiger, place a goat randomly
                     self.place_goat()
                     self.needs_update = True
             else:
                 # Check if a tiger is clicked
                 if (row, col) in self.tigers:
+                    print("```Tiger Clicked`````````````")
                     self.selected_tiger = (row, col)
                     self.needs_update = True
 
@@ -117,6 +115,13 @@ class Game:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.handle_click(pygame.mouse.get_pos())
+
+            # Check game status
+            if self.message != "On-going":
+                self.message = f"Game over: {self.message}"  # Update message based on game status
+                self.needs_update = True
+                print("Inside status loop")
+                running = False  # Stop the game loop if the game has ended
 
             if self.needs_update:  # Only draw when needed
                 self.screen.fill(BACKGROUND_COLOR)  # Clear the screen
