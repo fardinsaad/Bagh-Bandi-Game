@@ -1,64 +1,7 @@
 import math
 import random
 
-from constants import BOARD_SIZE
-
-nodes_in_order_of_search = [
-    (0, 0),  # 1
-    (0, 1),  # 2
-    (0, 2),  # 3
-    (0, 3),  # 4
-    (0, 4),  # 5
-    (1, 1),  # 6
-    (1, 2),  # 7
-    (1, 3),  # 8
-    (1, 4),  # 9
-    (2, 2),  # 10
-    (2, 3),  # 11
-    (2, 4),  # 12
-    (3, 3),  # 13
-    (3, 4),  # 14
-    (4, 4),  # 15
-    (2, 1),  # 16
-    (2, 0),  # 17
-    (1, 0),  # 18
-    (4, 3),  # 19
-    (3, 2),  # 20
-    (4, 2),  # 21
-    (3, 1),  # 22
-    (4, 1),  # 23
-    (4, 0),  # 24
-    (3, 0),  # 25
-]
-
-nodes_with_a_north_west_node = [
-    (1, 1), (2, 2), (1, 3), (3, 3), (3, 1), (2, 4), (4, 4), (4, 2)
-]
-nodes_with_a_west_node = [
-    (1, 1), (1, 0), (1, 2), (2, 2), (2, 1), (2, 0), (1, 3), (2, 3), (3, 3), (3, 2), (3, 1),
-    (3, 0), (1, 4), (2, 4), (3, 4), (4, 4), (4, 3), (4, 2), (4, 1), (4, 0),
-]
-nodes_with_a_south_west_node = [
-    (1, 1), (2, 2), (2, 0), (1, 3), (3, 3), (3, 1), (4, 2), (4, 0)
-]
-nodes_with_a_north_node = [
-    (0, 1), (1, 1), (0, 2), (1, 2), (2, 2), (2, 1), (0, 3), (1, 3), (2, 3), (3, 3), (3, 2),
-    (3, 1), (0, 4), (1, 4), (2, 4), (3, 4), (4, 4), (4, 3), (4, 2), (4, 1)
-]
-nodes_with_a_south_node = [
-    (0, 0), (0, 1), (1, 1), (1, 0), (0, 2), (1, 2), (2, 2), (2, 1), (2, 0), (0, 3), (1, 3),
-    (2, 3), (3, 3), (3, 2), (3, 1), (3, 0), (4, 3), (4, 2), (4, 1), (4, 0),
-]
-nodes_with_a_north_east_node = [
-    (1, 1), (0, 2), (2, 2), (1, 3), (2, 3), (3, 3), (3, 1), (0, 4), (2, 4)
-]
-nodes_with_a_east_node = [
-    (0, 0), (0, 1), (1, 1), (1, 0), (0, 2), (1, 2), (2, 2), (2, 1), (2, 0), (0, 3), (1, 3), (2, 3), (3, 3), (3, 2),
-    (3, 1), (3, 0), (0, 4), (1, 4), (2, 4), (3, 4)
-]
-nodes_with_a_south_east_node = [
-    (0, 0), (1, 1), (0, 2), (2, 2), (2, 0), (1, 3), (3, 3), (3, 1)
-]
+from src.constants import BOARD_SIZE
 
 
 class Node:
@@ -91,53 +34,14 @@ class Node:
         return f"[M:{self.move} W/V:{self.wins}/{self.visits} U:{len(self.untried_moves)}]"
 
 
-class DFS:
+class Random_Play:
     def __init__(self, board, iterations=1000, time_limit=None):
         self.board = board
         self.iterations = iterations
         self.time_limit = time_limit
 
     def determine_goat_move(self, tigers, goats, empty_positions, remaining_goat_number):
-        if remaining_goat_number > 0:  # keep placing new goats
-            for node in nodes_in_order_of_search:
-                if node in empty_positions:
-                    return None, node  # current node, new node
-        # all 20 goats have been placed on the board. Start moving the goats
-        for node in nodes_in_order_of_search:
-            if node in empty_positions:
-                continue
-
-            north_west_node = node[0] - 1, node[1] - 1
-            if node in nodes_with_a_north_west_node and north_west_node in empty_positions:
-                return node, north_west_node
-
-            west_node = node[0] - 1, node[1]
-            if node in nodes_with_a_west_node and west_node in empty_positions:
-                return node, west_node
-
-            south_west_node = node[0] - 1, node[1] + 1
-            if node in nodes_with_a_south_west_node and south_west_node in empty_positions:
-                return node, south_west_node
-
-            north_node = node[0] - 0, node[1] - 1
-            if node in nodes_with_a_north_node and north_node in empty_positions:
-                return node, north_node
-
-            south_node = node[0] - 0, node[1] + 1
-            if node in nodes_with_a_south_node and south_node in empty_positions:
-                return node, south_node
-
-            north_east_node = node[0] + 1, node[1] - 1
-            if node in nodes_with_a_north_east_node and north_east_node in empty_positions:
-                return node, north_east_node
-
-            east_node = node[0] + 1, node[1] + 0
-            if node in nodes_with_a_east_node and east_node in empty_positions:
-                return node, east_node
-
-            south_east_node = node[0] + 1, node[1] + 1
-            if node in nodes_with_a_south_east_node and south_east_node in empty_positions:
-                return node, south_east_node
+        return None, random.choice(empty_positions)
 
 
 class State:

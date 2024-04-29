@@ -9,8 +9,9 @@ from dfs import DFS
 
 
 class Game:
-    def __init__(self, screen):
+    def __init__(self, screen, algorithm):
         self.screen = screen
+        self.algorithm = algorithm
         self.goats = []
         self.tigers = [(0, 0), (0, BOARD_SIZE), (BOARD_SIZE, 0), (BOARD_SIZE, BOARD_SIZE)]
         self.board = Board(screen)
@@ -24,7 +25,9 @@ class Game:
                                      (1, 4), (3, 4)}
 
     def place_goat(self):
-        algorithm = "monte_carlo"
+
+        algorithm = self.algorithm
+
         empty_positions = [(row, col) for row in range(BOARD_SIZE + 1)
                            for col in range(BOARD_SIZE + 1)
                            if (row, col) not in self.goats and (row, col) not in self.tigers]
@@ -38,7 +41,12 @@ class Game:
         if algorithm == "bfs":
             new_goat_position = BFS.determine_goat_move(self.tigers, self.goats, empty_positions)
         if algorithm == "dfs":
-            new_goat_position = DFS.determine_goat_move(self.tigers, self.goats, empty_positions)
+            new_goat_position = DFS.determine_goat_move(DFS(board=self.board), self.tigers, self.goats, empty_positions,
+                                                        self.remaining_goat_number)
+
+        if new_goat_position is None:
+            print("No valid moves available.")
+            return  # Exit the function if no valid move is returned
 
         if new_goat_position is None:
             print("No valid moves available.")
@@ -176,7 +184,8 @@ class Game:
             if self.needs_update:  # Only draw when needed
                 self.screen.fill(BACKGROUND_COLOR)  # Clear the screen
                 self.board.draw(self.goats, self.tigers)  # Draw the board and the pieces
-                self.board.draw_info(self.goats_on_board, self.remaining_goat_number, self.number_of_moves,self.message)
+                self.board.draw_info(self.goats_on_board, self.remaining_goat_number, self.number_of_moves,
+                                     self.message)
                 pygame.display.flip()  # Update the display
                 self.needs_update = False  # Reset the update flag
 
