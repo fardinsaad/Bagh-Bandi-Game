@@ -37,7 +37,7 @@ class Game:
                                                                empty_positions, self.remaining_goat_number)
             print(new_goat_position)
         if algorithm == "astar":
-            new_goat_position = ASTAR.determine_goat_move(self.tigers, self.goats, empty_positions)
+            new_goat_position = ASTAR.determine_goat_move(ASTAR(board=self.board),self.tigers, self.goats, empty_positions, self.remaining_goat_number)
         if algorithm == "bfs":
             new_goat_position = BFS.determine_goat_move(BFS(board=self.board), self.tigers, self.goats, empty_positions,
                                                         self.remaining_goat_number)
