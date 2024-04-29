@@ -7,8 +7,8 @@ from constants import WINDOW_SIZE
 def main():
     algorithm = sys.argv[1].lower()
     print(algorithm)
-    if algorithm not in ["bfs", "dfs", "monte_carlo", "astar"]:
-        sys.exit("Invalid Algorithm specified, Valid Options: bfs, dfs, astar, monte_carlo")
+    if algorithm not in ["random", "bfs", "dfs", "monte_carlo", "astar"]:
+        sys.exit("Invalid Algorithm specified, Valid Options: random, bfs, dfs, astar, monte_carlo")
     pygame.init()
     pygame.font.init()
     screen = pygame.display.set_mode(WINDOW_SIZE)

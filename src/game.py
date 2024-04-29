@@ -6,6 +6,7 @@ from monte_carlo import MonteCarlo
 from astart import ASTAR
 from bfs import BFS
 from dfs import DFS
+from src.random_play import Random_Play
 
 
 class Game:
@@ -37,15 +38,16 @@ class Game:
             self.message = status
         print("here")
         print("state of goat before initialization", self.goats)
-        new_goat_position = ASTAR.determine_goat_move(ASTAR(board=self.board), self.tigers, self.goats, empty_positions,
-                                                      self.remaining_goat_number)
+        new_goat_position = ASTAR.determine_goat_move(ASTAR(board=self.board), self.tigers, self.goats, empty_positions, self.remaining_goat_number)
         print("state of goat after initialization", self.goats)
+
+        if algorithm == "random":
+            new_goat_position = Random_Play.determine_goat_move(Random_Play(board=self.board), self.tigers, self.goats, empty_positions, self.remaining_goat_number)
         if algorithm == "bfs":
-            new_goat_position = BFS.determine_goat_move(BFS(board=self.board), self.tigers, self.goats, empty_positions,
-                                                        self.remaining_goat_number)
+            new_goat_position = BFS.determine_goat_move(BFS(board=self.board), self.tigers, self.goats, empty_positions, self.remaining_goat_number)
 
         if algorithm == "dfs":
-            new_goat_position = DFS.determine_goat_move(self.tigers, self.goats, empty_positions)
+            new_goat_position = DFS.determine_goat_move(DFS(board=self.board), self.tigers, self.goats, empty_positions, self.remaining_goat_number)
 
         if new_goat_position is None:
             print("No valid moves available.")
