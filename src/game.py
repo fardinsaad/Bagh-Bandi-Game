@@ -6,6 +6,7 @@ from monte_carlo import MonteCarlo
 from astart import ASTAR
 from bfs import BFS
 from dfs import DFS
+from random_play import Random_Play
 
 
 class Game:
@@ -37,12 +38,16 @@ class Game:
                                                                empty_positions, self.remaining_goat_number)
             print(new_goat_position)
         if algorithm == "astar":
-            new_goat_position = ASTAR.determine_goat_move(ASTAR(board=self.board),self.tigers, self.goats, empty_positions, self.remaining_goat_number)
+            new_goat_position = ASTAR.determine_goat_move(ASTAR(board=self.board), self.tigers, self.goats, empty_positions, self.remaining_goat_number)
+
         if algorithm == "bfs":
             new_goat_position = BFS.determine_goat_move(BFS(board=self.board), self.tigers, self.goats, empty_positions,
                                                         self.remaining_goat_number)
         if algorithm == "dfs":
             new_goat_position = DFS.determine_goat_move(DFS(board=self.board), self.tigers, self.goats, empty_positions,
+                                                        self.remaining_goat_number)
+        if algorithm == "random":
+            new_goat_position = Random_Play.determine_goat_move(Random_Play(board=self.board), self.tigers, self.goats, empty_positions,
                                                         self.remaining_goat_number)
 
         if new_goat_position is None:
@@ -179,7 +184,7 @@ class Game:
             if self.message != "On-going":
                 self.message = f"Game over: {self.message}"  # Update message based on game status
                 print("Inside status loop")
-            #self.needs_update = True
+            # self.needs_update = True
             if self.needs_update:  # Only draw when needed
                 self.screen.fill(BACKGROUND_COLOR)  # Clear the screen
                 self.board.draw(self.goats, self.tigers)  # Draw the board and the pieces
