@@ -13,26 +13,39 @@ class Game:
     def __init__(self, screen, algorithm):
         self.screen = screen
         self.algorithm = algorithm
+        # maintain the positions of goats currently placed on board
         self.goats = []
+        # maintain the positions of tigers on board
         self.tigers = [(0, 0), (0, BOARD_SIZE), (BOARD_SIZE, 0), (BOARD_SIZE, BOARD_SIZE)]
         self.board = Board(screen)
+        # save the tiger that is clicked to make movement
         self.selected_tiger = None  # This will store the position of the selected tiger
+        # Total number of goats which are not killed yet
+        # At initial stage, our goat number is 25
         self.remaining_goat_number = 25
         self.goats_on_board = 0
         self.number_of_moves = 0
+        # This variable is used to update the visuals of the board
+        # Preventing the board refreshing every millisecond unnecessarily
         self.needs_update = True  # Flag to track when the screen needs to be updated
+        # Save the current game status
         self.message = "On-going"
+        # This list is used to control the movement of goats or tigers in some specified cell
+        # Positions in the list don't have diagonal moves
         self.restricted_positions = {(1, 0), (3, 0), (0, 1), (2, 1), (4, 1), (1, 2), (3, 2), (0, 3), (2, 3), (4, 3),
                                      (1, 4), (3, 4)}
 
     def place_goat(self):
 
         algorithm = self.algorithm
-
+        # calculate the empty positions of boards to place the tigers
         empty_positions = [(row, col) for row in range(BOARD_SIZE + 1)
                            for col in range(BOARD_SIZE + 1)
                            if (row, col) not in self.goats and (row, col) not in self.tigers]
         new_goat_position = None
+        # This conditional block will call appropriate method on appropriate class based on the algorithm
+        # and return the flag and position whether a goat on board needs movement
+        # or a new goat should place on board
         if algorithm == "monte_carlo":
             new_goat_position = MonteCarlo.determine_goat_move(MonteCarlo(board=self.board), self.tigers, self.goats,
                                                                empty_positions, self.remaining_goat_number)
@@ -50,17 +63,23 @@ class Game:
             new_goat_position = Random_Play.determine_goat_move(Random_Play(board=self.board), self.tigers, self.goats, empty_positions,
                                                         self.remaining_goat_number)
 
+        # Exit the function if no valid move is returned
         if new_goat_position is None:
             print("No valid moves available.")
             return  # Exit the function if no valid move is returned
 
+        # If the first value is null, it means a new goat will place in an empty position
+        # An empty position is return in the second value
         if new_goat_position[0] is None:
             self.goats.append(new_goat_position[1])
             self.goats_on_board += 1
+        # If first value is not None i.e a position
+        # IT indicates that an existing goat on board will move to a position return in second value
         else:
             if new_goat_position[0] in self.goats:
+                # replace the old position by the new position
                 self.goats[self.goats.index(new_goat_position[0])] = new_goat_position[1]
-        self.needs_update = True  # Set the flag to update the screen
+        self.needs_update = True
 
     def game_status(self):
         # Checks if all tigers are trapped
@@ -80,21 +99,21 @@ class Game:
             return "Stalemate"
         return "On-going"
 
+    # Check if a position is free of both tigers and goats
     def is_free(self, position):
-        """ Check if a position is free of both tigers and goats """
         return position not in self.tigers and position not in self.goats
 
     def is_within_bounds(self, position):
-        """ Check if a position is within the board boundaries """
+        #Check if a position is within the board boundaries
         x, y = position
         return 0 <= x <= BOARD_SIZE and 0 <= y <= BOARD_SIZE
 
     def is_occupied_by_goat(self, position):
-        """ Check if a position is occupied by a goat """
+        #Check if a position is occupied by a goat
         return position in self.goats
 
     def can_move(self, tiger):
-        """ Check if a tiger can move or jump to capture a goat, with restrictions on diagonal moves """
+        # Check if a tiger can move or jump to capture a goat, with restrictions on diagonal moves
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Cardinal directions
         diagonal_directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]  # Diagonal directions
         all_possible_moves = directions.copy()
@@ -117,6 +136,8 @@ class Game:
         print("````````````Tiger move False`````````````")
         return False
 
+    # This method will check if there is a goat in the path of tiger movement
+    # if so it will return TRUE and the position of goat; otherwise false
     def is_goat_in_path(self, old_pos, new_pos):
         path = self.calculate_path(old_pos, new_pos)
         for pos in path:
@@ -124,6 +145,7 @@ class Game:
                 return True, pos
         return False, None
 
+    # Calculate total path of a tiger to check if there is a goat in between the path
     def calculate_path(self, start, end):
         path = []
         start_row, start_col = start
@@ -139,11 +161,15 @@ class Game:
 
         return path
 
+    # This method is used to move the tiger by click on it
     def handle_click(self, pos):
         x, y = pos[0] - MARGIN, pos[1] - MARGIN
         col, row = round(x / CELL_SIZE), round(y / CELL_SIZE)
+        # check it the click is on a valid position
         if 0 <= col <= BOARD_SIZE and 0 <= row <= BOARD_SIZE:
             new_position = (row, col)
+            # If a tiger is already selected by a click event before
+            # It will move the tiger in the new place
             if self.selected_tiger:
                 if new_position not in self.goats and new_position not in self.tigers:
                     self.tigers.remove(self.selected_tiger)
@@ -151,7 +177,6 @@ class Game:
                     self.needs_update = True
 
                     goats_in_path, goat_pos = self.is_goat_in_path(self.selected_tiger, new_position)
-                    print(goat_pos)
                     if goats_in_path:  # If there are goats in the path, remove the first one
                         self.goats.remove(goat_pos)
                         self.goats_on_board -= 1
