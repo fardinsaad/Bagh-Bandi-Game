@@ -4,36 +4,6 @@ import random
 from constants import BOARD_SIZE
 
 
-class Node:
-    def __init__(self, move=None, parent=None, state=None):
-        self.move = move
-        self.parent = parent
-        self.children = []
-        self.wins = 0
-        self.visits = 0
-        self.state = state
-        self.untried_moves = state.get_legal_moves()
-
-    def select_child(self):
-        """Select a child node with the highest UCB1 value."""
-        return max(self.children, key=lambda c: (c.wins / c.visits) + math.sqrt(2 * math.log(self.visits) / c.visits))
-
-    def add_child(self, move, state):
-        """Add a new child node for the given move."""
-        child = Node(move=move, parent=self, state=state)
-        self.untried_moves.remove(move)
-        self.children.append(child)
-        return child
-
-    def update(self, result):
-        """Update this node - increment the visit count by 1 and increase wins by the result of the play-out."""
-        self.visits += 1
-        self.wins += result  # Adjust how result affects wins if necessary
-
-    def __repr__(self):
-        return f"[M:{self.move} W/V:{self.wins}/{self.visits} U:{len(self.untried_moves)}]"
-
-
 class Random_Play:
     def __init__(self, board, iterations=1000, time_limit=None):
         self.board = board
@@ -41,18 +11,15 @@ class Random_Play:
         self.time_limit = time_limit
 
     def determine_goat_move(self, tigers, goats, empty_positions, remaining_goat_number):
-        return None, random.choice(empty_positions)
-
-
-class State:
-    def __init__(self, tigers, goats, empty_positions, remaining_goat_number):
         self.tigers = tigers
-        self.goats = goats
-        self.empty_positions = empty_positions
         self.remaining_goat_number = remaining_goat_number
+        self.empty_positions = empty_positions
+        self.goats = goats
+        legal_moves = self.get_legal_moves()
+        return random.choice(legal_moves)
 
     def get_legal_moves(self):
-        """ List all possible legal moves for the goats, considering safety and restricted positions. """
+        #List all possible legal moves for the goats, considering safety and restricted positions.
         normal_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         diagonal_directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
         restricted_positions = {
@@ -81,7 +48,7 @@ class State:
         return legal_moves
 
     def do_move(self, move):
-        """ Update the state by performing a move """
+        # Update the state by performing a move
         goat_position, new_position = move
         if goat_position:
             # Move existing goat
@@ -94,31 +61,13 @@ class State:
         self.empty_positions.remove(new_position)
 
     def is_adjacent_to_tiger(self, position):
-        """ Check if a position is adjacent to any tiger """
+        # Check if a position is adjacent to any tiger
         px, py = position
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
         return any((px + dx, py + dy) in self.tigers for dx, dy in directions)
 
-    def get_result(self):
-        """ Evaluate the game state from the goats' perspective, prioritizing safety. """
-        # if not self.goats:
-        #     return -1  # All goats are captured, tigers win
-
-        score = 0
-        for goat in self.goats:
-            if self.is_adjacent_to_tiger(goat):
-                score -= 10  # Penalize positions where goats are next to tigers
-
-        # Tigers' movement evaluation
-        # for tiger in self.tigers:
-        #     for direction in [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
-        #         if self.can_move(tiger, direction):
-        #             score += 3  # Game continues, evaluate based on tiger mobility
-
-        return score
-
     def can_move(self, position, direction):
-        """ Check if a move is valid given a position and direction, considering board boundaries and other pieces """
+       # Check if a move is valid given a position and direction, considering board boundaries and other pieces
         px, py = position
         dx, dy = direction
         nx, ny = px + dx, py + dy
@@ -127,6 +76,3 @@ class State:
                 return True
         return False
 
-    def clone(self):
-        """ Create a deep copy of the current game state """
-        return State(self.tigers.copy(), self.goats.copy(), self.empty_positions.copy(), self.remaining_goat_number)
