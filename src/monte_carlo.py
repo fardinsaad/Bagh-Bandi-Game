@@ -68,16 +68,11 @@ class MonteCarlo:
                 result = state.get_result()
                 node.update(result)
                 node = node.parent
-
-        #status = root.state.game_status()  # Check the game status
+                
 
         if not root.children:
             print("Legal moves: ", root.state.get_legal_moves())
-            #print("Is free: ", root.state.is_free())
             return None  # Handle no valid moves
-
-        # if status != "On-going":  # If game is not ongoing, handle the end-game condition
-        #     return status  # This could be 'win_for_tigers', 'win_for_goats', or 'stalemate'
 
         return max(root.children, key=lambda c: c.visits).move
 
@@ -210,7 +205,7 @@ class State:
         return False
 
     def is_capture_blocked_by_tiger(self, goat_position):
-        """Check if a goat at this position is protected from capture by another tiger or goat blocking the capture
+        """Check if a goat at this position is protected from capture by another tiger blocking the capture
         path."""
         x, y = goat_position
         normal_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
@@ -228,12 +223,12 @@ class State:
 
             if self.is_within_bounds(jump_position) and self.is_within_bounds(mid_position):
                 if mid_position in self.tigers and jump_position in self.tigers:
-                    return True  # Capture path is blocked by another tiger or goat
+                    return True  # Capture path is blocked by another tiger 
 
         return False
 
     def is_capture_blocked_by_goat(self, goat_position):
-        """Check if a goat at this position is protected from capture by another tiger or goat blocking the capture
+        """Check if a goat at this position is protected from capture by another goat blocking the capture
         path."""
         x, y = goat_position
         normal_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
@@ -251,7 +246,7 @@ class State:
 
             if self.is_within_bounds(jump_position) and self.is_within_bounds(mid_position):
                 if mid_position in self.goats and jump_position in self.goats:
-                    return True  # Capture path is blocked by another tiger or goat
+                    return True  # Capture path is blocked by another goat
 
         return False
 
@@ -306,13 +301,13 @@ class State:
         if escape_moves:
             return escape_moves
 
-        # Regular safe placements from goats not on the board not adjacent to tigers
+        # Regular safe placements from goats not on the board and not adjacent to tigers
         if self.remaining_goat_number - len(self.goats) > 0:
             for empty in self.empty_positions:
                 if not self.is_adjacent_to_tiger(empty):
                     legal_moves.append((None, empty))
 
-        #  Regular safe placements from goats  on the board not adjacent to tigers
+        #  Regular safe placements from goats on the board and not adjacent to tigers
         for goat in self.goats:
             allowed_directions = normal_directions if goat in self.restricted_positions else normal_directions + diagonal_directions
             for dx, dy in allowed_directions:
