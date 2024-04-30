@@ -3,7 +3,7 @@ from board import Board
 from constants import *
 import random
 from monte_carlo import MonteCarlo
-from astart import ASTAR
+from astar import ASTAR
 from bfs import BFS
 from dfs import DFS
 from random_play import Random_Play
