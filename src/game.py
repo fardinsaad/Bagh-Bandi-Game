@@ -28,6 +28,7 @@ class Game:
         # This variable is used to update the visuals of the board
         # Preventing the board refreshing every millisecond unnecessarily
         self.needs_update = True  # Flag to track when the screen needs to be updated
+        # Save the current game status
         self.message = "On-going"
         # This list is used to control the movement of goats or tigers in some specified cell
         # Positions in the list don't have diagonal moves
@@ -123,6 +124,8 @@ class Game:
 
         return False
 
+    # This method will check if there is a goat in the path of tiger movement
+    # if so it will return TRUE and the position of goat; otherwise false
     def is_goat_in_path(self, old_pos, new_pos):
         path = self.calculate_path(old_pos, new_pos)
         for pos in path:
@@ -130,6 +133,7 @@ class Game:
                 return True, pos
         return False, None
 
+    # Calculate total path of a tiger to check if there is a goat in between the path
     def calculate_path(self, start, end):
         path = []
         start_row, start_col = start
@@ -145,23 +149,25 @@ class Game:
 
         return path
 
+    # This method is used to move the tiger by click on it
     def handle_click(self, pos):
         x, y = pos[0] - MARGIN, pos[1] - MARGIN
         col, row = round(x / CELL_SIZE), round(y / CELL_SIZE)
+        # check it the click is on a valid position
         if 0 <= col <= BOARD_SIZE and 0 <= row <= BOARD_SIZE:
             new_position = (row, col)
+            # If a tiger is already selected by a click event before
+            # It will move the tiger in the new place
             if self.selected_tiger:
                 if new_position not in self.goats and new_position not in self.tigers:
                     self.tigers.remove(self.selected_tiger)
                     self.tigers.append(new_position)
                     self.needs_update = True
-
                     #  Checking Game Status
                     current_game_status = self.game_status()
                     self.message = current_game_status
 
                     goats_in_path, goat_pos = self.is_goat_in_path(self.selected_tiger, new_position)
-                    print(goat_pos)
                     if goats_in_path:  # If there are goats in the path, remove the first one
                         self.goats.remove(goat_pos)
                         self.goats_on_board -= 1
