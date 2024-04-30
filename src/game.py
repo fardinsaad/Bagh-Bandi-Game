@@ -54,10 +54,6 @@ class Game:
             print("No valid moves available.")
             return  # Exit the function if no valid move is returned
 
-        if new_goat_position is None:
-            print("No valid moves available.")
-            return  # Exit the function if no valid move is returned
-
         if new_goat_position[0] is None:
             self.goats.append(new_goat_position[1])
             self.goats_on_board += 1
@@ -68,7 +64,13 @@ class Game:
 
     def game_status(self):
         # Checks if all tigers are trapped
-        if all(not self.can_move(tiger) for tiger in self.tigers):
+        isGoatwin = True
+        for tiger in self.tigers:
+            current_tiger_move = self.can_move(tiger)
+            if current_tiger_move == True:
+                isGoatwin = False
+                break
+        if isGoatwin:
             return "Win for Goats"
         # Checks if all goats are captured
         if self.remaining_goat_number <= 5:
@@ -85,7 +87,7 @@ class Game:
     def is_within_bounds(self, position):
         """ Check if a position is within the board boundaries """
         x, y = position
-        return 0 <= x < BOARD_SIZE and 0 <= y < BOARD_SIZE
+        return 0 <= x <= BOARD_SIZE and 0 <= y <= BOARD_SIZE
 
     def is_occupied_by_goat(self, position):
         """ Check if a position is occupied by a goat """
@@ -98,16 +100,21 @@ class Game:
         all_possible_moves = directions.copy()
 
         if tiger not in self.restricted_positions:
-            all_possible_moves.extend(diagonal_directions)  # Allow diagonal moves only from non-restricted positions
-
+            all_possible_moves = directions + diagonal_directions  # Allow diagonal moves only from non-restricted positions
+        print("````Tiger position: ")
+        print(tiger)
         for d in all_possible_moves:
             normal_move = (tiger[0] + d[0], tiger[1] + d[1])
             jump_move = (tiger[0] + 2 * d[0], tiger[1] + 2 * d[1])
             if self.is_within_bounds(normal_move) and self.is_free(normal_move):
+                print("``````````Tiger move true````````````")
+                print(normal_move)
                 return True
             if self.is_within_bounds(jump_move) and self.is_occupied_by_goat(normal_move) and self.is_free(jump_move):
+                print("```````````Tiger move true jump`````````")
+                print(jump_move)
                 return True
-
+        print("````````````Tiger move False`````````````")
         return False
 
     def is_goat_in_path(self, old_pos, new_pos):
@@ -143,10 +150,6 @@ class Game:
                     self.tigers.append(new_position)
                     self.needs_update = True
 
-                    #  Checking Game Status
-                    current_game_status = self.game_status()
-                    self.message = current_game_status
-
                     goats_in_path, goat_pos = self.is_goat_in_path(self.selected_tiger, new_position)
                     print(goat_pos)
                     if goats_in_path:  # If there are goats in the path, remove the first one
@@ -162,6 +165,10 @@ class Game:
                     # After moving tiger, place a goat randomly
                     self.place_goat()
                     self.needs_update = True
+
+                    #  Checking Game Status
+                    current_game_status = self.game_status()
+                    self.message = current_game_status
             else:
                 # Check if a tiger is clicked
                 if (row, col) in self.tigers:
@@ -171,6 +178,7 @@ class Game:
 
     def run(self):
         running = True
+        flag = 0
         clock = pygame.time.Clock()  # Create a clock object to manage refresh rate
         self.place_goat()
         while running:
@@ -181,9 +189,12 @@ class Game:
                     self.handle_click(pygame.mouse.get_pos())
 
             # Check game status
-            if self.message != "On-going":
-                self.message = f"Game over: {self.message}"  # Update message based on game status
-                print("Inside status loop")
+            if self.message != "On-going" and flag == 0:
+                flag = 1
+                self.message = f"Game over --> {self.message}"  # Update message based on game status
+                print("Inside status loop: ")
+                print(self.message)
+
             # self.needs_update = True
             if self.needs_update:  # Only draw when needed
                 self.screen.fill(BACKGROUND_COLOR)  # Clear the screen
@@ -193,4 +204,4 @@ class Game:
                 pygame.display.flip()  # Update the display
                 self.needs_update = False  # Reset the update flag
 
-        pygame.quit()
+        #pygame.quit()

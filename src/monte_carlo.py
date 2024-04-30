@@ -72,6 +72,8 @@ class MonteCarlo:
         #status = root.state.game_status()  # Check the game status
 
         if not root.children:
+            print("Legal moves: ", root.state.get_legal_moves())
+            #print("Is free: ", root.state.is_free())
             return None  # Handle no valid moves
 
         # if status != "On-going":  # If game is not ongoing, handle the end-game condition
@@ -113,7 +115,7 @@ class State:
     def is_within_bounds(self, position):
         """ Check if a position is within the board boundaries """
         x, y = position
-        return 0 <= x < BOARD_SIZE and 0 <= y < BOARD_SIZE
+        return 0 <= x <= BOARD_SIZE and 0 <= y <= BOARD_SIZE
 
     def can_move(self, tiger):
         """ Check if a tiger can move or jump to capture a goat, with restrictions on diagonal moves """
@@ -158,24 +160,24 @@ class State:
         diagonal_directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
         boundary = [(0, 0), (0, 4), (4, 0), (4, 4)]
         if not self.goats:
-            return -1  # All goats are captured, tigers win.
+            return -1000  # All goats are captured, tigers win. High penalty.
 
         if all(not self.can_move(tiger) for tiger in self.tigers):
-            return 1  # All tigers are immobilized, goats win.
+            return 1000  # All tigers are immobilized, goats win. High reward.
 
         score = 0
         for goat in self.goats:
             if self.is_adjacent_to_tiger(goat):
                 score -= 10  # Increased penalty for goats in immediate danger.
                 if self.is_unprotected_in_capture_direction(goat):
-                    score -= 100  # High penalty if no protective goat/tiger in the direct line of potential capture.
+                    score -= 120  # High penalty if no protective goat/tiger in the direct line of potential capture.
 
             # Reward for goats that are protected by another goat when under threat
             if self.is_capture_blocked_by_goat(goat):
                 score += 100  # Increase the reward to reflect the strategic importance of protection.
             # Reward for goats that are protected by another tiger when under threat
             if self.is_capture_blocked_by_tiger(goat):
-                score += 15  # Increase the reward to reflect the strategic importance of protection.
+                score += 20  # Increase the reward to reflect the strategic importance of protection.
 
             #  Goat in boundary spaces
             #if goat in boundary:
@@ -183,7 +185,7 @@ class State:
 
             # Reward for goats that are protected by another goat.
             if self.has_protective_neighbor(goat):
-                score += 15  # Increase the reward to reflect the strategic importance of protection.
+                score += 10  # Increase the reward to reflect the strategic importance of protection.
 
             # Reward for goats are escape from imminent threat of capture
             allowed_directions = normal_directions + diagonal_directions if goat not in self.restricted_positions else normal_directions
@@ -296,16 +298,21 @@ class State:
                                 escape_moves.append((goat, next_position))
 
         # Evaluate and prioritize moves based on strategic importance
-        if protective_moves or escape_moves:
+        if protective_moves:
             # Protective moves are prioritized over escape moves
-            return protective_moves + escape_moves
+            return protective_moves
 
-        # Regular safe placements and moves
+        # Escape move come after protective moves
+        if escape_moves:
+            return escape_moves
+
+        # Regular safe placements from goats not on the board not adjacent to tigers
         if self.remaining_goat_number - len(self.goats) > 0:
             for empty in self.empty_positions:
                 if not self.is_adjacent_to_tiger(empty):
                     legal_moves.append((None, empty))
 
+        #  Regular safe placements from goats  on the board not adjacent to tigers
         for goat in self.goats:
             allowed_directions = normal_directions if goat in self.restricted_positions else normal_directions + diagonal_directions
             for dx, dy in allowed_directions:
@@ -314,7 +321,23 @@ class State:
                         (nx, ny)) and not self.is_adjacent_to_tiger((nx, ny)):
                     legal_moves.append((goat, (nx, ny)))
 
-        return legal_moves + protective_moves + escape_moves  # Include all moves
+        if legal_moves:
+            return legal_moves
+
+        # Regular safe placements from goats not on the board
+        if self.remaining_goat_number - len(self.goats) > 0:
+            for empty in self.empty_positions:
+                legal_moves.append((None, empty))
+
+        #  Regular safe placements from goats on the board
+        for goat in self.goats:
+            allowed_directions = normal_directions if goat in self.restricted_positions else normal_directions + diagonal_directions
+            for dx, dy in allowed_directions:
+                nx, ny = goat[0] + dx, goat[1] + dy
+                if 0 <= nx < BOARD_SIZE and 0 <= ny < BOARD_SIZE and self.is_free((nx, ny)):
+                    legal_moves.append((goat, (nx, ny)))
+
+        return legal_moves   # Include all moves
 
     def directly_blocks_tiger(self, goat, next_position):
         """ Check if placing a goat at next_position directly blocks a tiger from capturing the goat at goat_position"""

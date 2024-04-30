@@ -1,7 +1,7 @@
 import math
 import random
 
-from src.constants import BOARD_SIZE
+from constants import BOARD_SIZE
 
 
 class Node:
