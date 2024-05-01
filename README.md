@@ -6,13 +6,15 @@
 
 ## Installation
 
-1. Clone the repository/unzip the code file and go to the project folder:
- https://github.ncsu.edu/upaul/BaghBandi_AI
+1. Clone the repository and go to the project folder:
+
 
     ```bash
-    git clone <repository_url>
+    git clone https://github.ncsu.edu/upaul/BaghBandi_AI.git
     cd BaghBandi_AI
     ```
+    or
+    You can unzip the file and go to the folder
 2. Install dependencies using pip:
 
     ```bash
@@ -29,7 +31,7 @@
 After completing the installation and configuration steps, you can run your Python script. Ensure that all dependencies are installed and the environment variables are properly set.
 
 ```bash
-python main.py <algo_name> 
+python3 main.py <algo_name> 
 ```
 ##### Valid Algorithm names:
 1. bfs
