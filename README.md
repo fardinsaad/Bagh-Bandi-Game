@@ -12,7 +12,7 @@
 
     ```bash
     git clone <repository_url>
-    ```
+   
 2. Install dependencies using pip:
 
     ```bash
@@ -22,7 +22,7 @@
 
     ```bash
     cd src
-    ```
+   
 
 ## Running the Script
 
