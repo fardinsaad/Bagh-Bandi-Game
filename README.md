@@ -6,7 +6,7 @@
 
 ## Installation
 
-1. Clone the repository and go to the project folder:
+1. Clone the repository and go to the BaghBandi_AI folder:
 
 
     ```bash
