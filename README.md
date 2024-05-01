@@ -10,8 +10,9 @@
 
  https://github.ncsu.edu/upaul/BaghBandi_AI
 
-    ```bash
+       ```bash
     git clone <repository_url>
+    cd BaghBandi_AI
  
 2. Install dependencies using pip:
 
