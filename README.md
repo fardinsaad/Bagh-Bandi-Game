@@ -1,4 +1,4 @@
-# Bagh-Bandi Game: Bridging Ancient Strategy with Modern AI Techniques (2024)
+# Bagh-Bandi Game: Exploring Ancient Games through Modern AI Strategies (2024)
 ![Static Badge](https://img.shields.io/badge/Python-blue?style=for-the-badge&logo=Python&logoColor=black&labelColor=yellow)
 ![Static Badge](https://img.shields.io/badge/Monte--Carlo%20Tree%20Serach-purple?style=for-the-badge)
 ![Static Badge](https://img.shields.io/badge/BFS%2FDFS%2FA*-orange?style=for-the-badge)
