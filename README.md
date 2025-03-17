@@ -8,7 +8,7 @@
 This project was developed for CSC-520 Artificial Intelligence Course at NC State University for Spring 2024.
 The Bagh-Bandi Game brings the centuries-old traditional game into the modern world of artificial intelligence. This strategic, adversarial game pits two players against each other: the goats, controlled by an AI, and the tigers, operated by a human player. Developed in Python, the game leverages both classic and advanced AI strategies, including Breadth-First Search (BFS), Depth-First Search (DFS), and A search algorithms*. Additionally, the game incorporates the Monte-Carlo Tree Search (MCTS) to simulate sophisticated gameplay tactics, offering a challenging and immersive experience that combines traditional gameplay with cutting-edge AI methods.
 
-[Gameplay](Images/Image.png)
+![MCTS Demo](https://github.com/fardinsaad/Bagh-Bandi-Game/raw/master/Images/MCTS_Expert.gif)
 
 ## Team Members
  Uchswas Paul
