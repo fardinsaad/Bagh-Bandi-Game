@@ -11,10 +11,10 @@ The Bagh-Bandi Game brings the centuries-old traditional game into the modern wo
 ![MCTS Demo](https://github.com/fardinsaad/Bagh-Bandi-Game/raw/master/Images/MCTS_Expert.gif)
 
 ## Team Members
- Uchswas Paul
- Fardin Saad
- Adittya Soukarjya Saha
- Vinay Vobbilichetty
+- Fardin Saad
+- Uchswas Paul
+- Adittya Soukarjya Saha
+- Vinay Vobbilichetty
 ## Requirements
 
 - Python 3.x
